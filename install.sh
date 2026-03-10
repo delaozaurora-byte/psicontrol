@@ -104,7 +104,7 @@ elif check_command python; then
 else
     error "Python 3 no está instalado. Instálalo en https://python.org"
 fi
-PYTHON_VERSION=$($PYTHON --version 2>&1 | grep -oP '\d+\.\d+')
+PYTHON_VERSION=$($PYTHON --version 2>&1 | grep -E -o '[0-9]+\.[0-9]+')
 info "Python detectado: $($PYTHON --version)"
 
 # Verificar Node.js
