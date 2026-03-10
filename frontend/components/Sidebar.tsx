@@ -14,17 +14,26 @@ import {
   LogOut,
   ChevronRight,
   User,
+  ClipboardCheck,
+  UserCog,
+  BarChart3,
 } from 'lucide-react';
 import { getMe, removeToken } from '@/lib/api';
 import type { User as UserType } from '@/lib/types';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/pacientes', label: 'Pacientes', icon: Users },
-  { href: '/citas', label: 'Citas', icon: Calendar },
-  { href: '/sesiones', label: 'Sesiones Clínicas', icon: ClipboardList },
-  { href: '/facturacion', label: 'Facturación', icon: Receipt },
-  { href: '/gastos', label: 'Gastos', icon: TrendingDown },
+  { href: '/dashboard',      label: 'Dashboard',          icon: LayoutDashboard },
+  { href: '/pacientes',      label: 'Pacientes',          icon: Users },
+  { href: '/citas',          label: 'Citas',              icon: Calendar },
+  { href: '/sesiones',       label: 'Sesiones Clínicas',  icon: ClipboardList },
+  { href: '/planes-diarios', label: 'Planes Diarios',     icon: ClipboardCheck },
+  { href: '/facturacion',    label: 'Facturación',        icon: Receipt },
+  { href: '/gastos',         label: 'Gastos',             icon: TrendingDown },
+];
+
+const adminItems = [
+  { href: '/usuarios',  label: 'Usuarios',  icon: UserCog },
+  { href: '/informes',  label: 'Informes',  icon: BarChart3 },
 ];
 
 const roleLabels: Record<string, string> = {
@@ -38,13 +47,26 @@ export default function Sidebar() {
   const router = useRouter();
   const [user, setUser] = useState<UserType | null>(null);
 
-  useEffect(() => {
-    getMe().then(setUser).catch(() => null);
-  }, []);
+  useEffect(() => { getMe().then(setUser).catch(() => null); }, []);
 
   function handleLogout() {
     removeToken();
     router.push('/login');
+  }
+
+  function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) {
+    const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
+    return (
+      <Link
+        href={href}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+          ${isActive ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`}
+      >
+        <Icon className="w-5 h-5 flex-shrink-0" />
+        <span className="flex-1">{label}</span>
+        {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
+      </Link>
+    );
   }
 
   return (
@@ -64,29 +86,19 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`
-                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group
-                ${isActive
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }
-              `}
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              <span className="flex-1">{label}</span>
-              {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
-            </Link>
-          );
-        })}
+        {navItems.map((item) => <NavLink key={item.href} {...item} />)}
+
+        {user?.role === 'admin' && (
+          <>
+            <div className="pt-4 pb-1 px-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Administración</p>
+            </div>
+            {adminItems.map((item) => <NavLink key={item.href} {...item} />)}
+          </>
+        )}
       </nav>
 
-      {/* User info + Logout */}
+      {/* User + Logout */}
       <div className="px-3 py-4 border-t border-gray-800 space-y-2">
         {user && (
           <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-800">
