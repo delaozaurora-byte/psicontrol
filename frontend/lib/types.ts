@@ -210,6 +210,78 @@ export interface FinancialSummary {
   net_income: number;
 }
 
+// ── Plan Diario de Responsabilidad ────────────────────────────────────────────
+
+export type DailyPlanItemStatus = 'pendiente' | 'completado' | 'parcial' | 'no_completado';
+
+export interface DailyPlanItem {
+  id: number;
+  section_id: number;
+  activity: string;
+  status: DailyPlanItemStatus;
+  notes: string | null;
+  order: number;
+}
+
+export interface DailyPlanItemCreate {
+  activity: string;
+  status?: DailyPlanItemStatus;
+  notes?: string;
+  order?: number;
+}
+
+export interface DailyPlanSection {
+  id: number;
+  plan_id: number;
+  label: string;   // A, B, C…
+  title: string;
+  order: number;
+  items: DailyPlanItem[];
+}
+
+export interface DailyPlanSectionCreate {
+  label: string;
+  title: string;
+  order?: number;
+  items: DailyPlanItemCreate[];
+}
+
+export interface DailyPlan {
+  id: number;
+  patient_id: number;
+  therapist_id: number;
+  plan_date: string;
+  title: string;
+  instructions: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string | null;
+  sections: DailyPlanSection[];
+}
+
+export interface DailyPlanCreate {
+  patient_id: number;
+  therapist_id: number;
+  plan_date: string;
+  title?: string;
+  instructions?: string;
+  sections: DailyPlanSectionCreate[];
+}
+
+export interface DailyPlanUpdate {
+  plan_date?: string;
+  title?: string;
+  instructions?: string;
+  status?: string;
+}
+
+export interface DailyPlanItemUpdate {
+  activity?: string;
+  status?: DailyPlanItemStatus;
+  notes?: string;
+  order?: number;
+}
+
 export interface AuthToken {
   access_token: string;
   token_type: string;

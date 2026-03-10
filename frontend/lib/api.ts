@@ -15,6 +15,10 @@ import type {
   DashboardStats,
   FinancialSummary,
   AuthToken,
+  DailyPlan,
+  DailyPlanCreate,
+  DailyPlanUpdate,
+  DailyPlanItemUpdate,
 } from './types';
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -297,4 +301,40 @@ export async function getFinancialSummary(year: number, month: number): Promise<
 // Dashboard
 export async function getDashboard(): Promise<DashboardStats> {
   return apiFetch<DashboardStats>('/api/dashboard');
+}
+
+// Daily Plans
+export async function getDailyPlans(patientId?: number): Promise<DailyPlan[]> {
+  const params = new URLSearchParams();
+  if (patientId) params.append('patient_id', patientId.toString());
+  return apiFetch<DailyPlan[]>(`/api/daily-plans?${params.toString()}`);
+}
+
+export async function getDailyPlan(id: number): Promise<DailyPlan> {
+  return apiFetch<DailyPlan>(`/api/daily-plans/${id}`);
+}
+
+export async function createDailyPlan(data: DailyPlanCreate): Promise<DailyPlan> {
+  return apiFetch<DailyPlan>('/api/daily-plans', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateDailyPlan(id: number, data: DailyPlanUpdate): Promise<DailyPlan> {
+  return apiFetch<DailyPlan>(`/api/daily-plans/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteDailyPlan(id: number): Promise<void> {
+  return apiFetch<void>(`/api/daily-plans/${id}`, { method: 'DELETE' });
+}
+
+export async function updateDailyPlanItem(id: number, data: DailyPlanItemUpdate): Promise<void> {
+  return apiFetch<void>(`/api/daily-plans/items/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
 }

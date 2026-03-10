@@ -8,12 +8,14 @@ import {
   getAppointments,
   getClinicalSessions,
   getDiagnoses,
+  getMe,
 } from '@/lib/api';
-import type { Patient, PatientCreate, Appointment, ClinicalSession, Diagnosis } from '@/lib/types';
+import type { Patient, PatientCreate, Appointment, ClinicalSession, Diagnosis, User as UserType } from '@/lib/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { ArrowLeft, Save, AlertCircle, Calendar, ClipboardList, Stethoscope, User } from 'lucide-react';
+import DailyPlansTab from '@/components/DailyPlansTab';
+import { ArrowLeft, Save, AlertCircle, Calendar, ClipboardList, Stethoscope, User, ClipboardCheck } from 'lucide-react';
 
-type Tab = 'info' | 'citas' | 'sesiones' | 'diagnosticos';
+type Tab = 'info' | 'citas' | 'sesiones' | 'diagnosticos' | 'planes';
 
 const statusColors: Record<string, string> = {
   scheduled: 'bg-blue-100 text-blue-700',
@@ -49,11 +51,16 @@ export default function PatientDetailPage() {
   const [sessions, setSessions] = useState<ClinicalSession[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [tabLoading, setTabLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<PatientCreate>({ full_name: '' });
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    getMe().then(setCurrentUser).catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -142,6 +149,7 @@ export default function PatientDetailPage() {
     { key: 'citas', label: 'Citas', icon: Calendar },
     { key: 'sesiones', label: 'Sesiones Clínicas', icon: ClipboardList },
     { key: 'diagnosticos', label: 'Diagnósticos', icon: Stethoscope },
+    { key: 'planes', label: 'Planes Diarios', icon: ClipboardCheck },
   ];
 
   return (
@@ -381,6 +389,12 @@ export default function PatientDetailPage() {
             </div>
           )}
         </div>
+      )}
+      {activeTab === 'planes' && (
+        <DailyPlansTab
+          patientId={id}
+          therapistId={currentUser?.id ?? 1}
+        />
       )}
     </div>
   );

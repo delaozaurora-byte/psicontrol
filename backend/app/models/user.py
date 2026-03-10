@@ -24,3 +24,4 @@ class User(Base):
     patients = relationship("Patient", back_populates="therapist", foreign_keys="Patient.therapist_id")
     appointments = relationship("Appointment", back_populates="therapist")
     sessions = relationship("ClinicalSession", back_populates="therapist")
+    daily_plans = relationship("DailyPlan", back_populates="therapist")

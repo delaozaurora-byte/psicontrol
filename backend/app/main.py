@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 from app.core.config import settings
-from app.routers import auth, users, patients, appointments, clinical, billing, dashboard
+from app.routers import auth, users, patients, appointments, clinical, billing, dashboard, daily_plans
 from app.core.security import get_password_hash
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.database import SessionLocal
 from app.models.user import User
+from app.models import daily_plan  # noqa: F401 – ensures tables are created
 
 app = FastAPI(title=settings.APP_NAME, version="1.0.0")
 
@@ -28,6 +29,7 @@ app.include_router(appointments.router)
 app.include_router(clinical.router)
 app.include_router(billing.router)
 app.include_router(dashboard.router)
+app.include_router(daily_plans.router)
 
 
 def run_migrations(db: Session):

@@ -46,3 +46,4 @@ class Patient(Base):
     diagnoses = relationship("Diagnosis", back_populates="patient")
     treatment_plans = relationship("TreatmentPlan", back_populates="patient")
     invoices = relationship("Invoice", back_populates="patient")
+    daily_plans = relationship("DailyPlan", back_populates="patient")

@@ -70,3 +70,12 @@ button,
 a {
   transition: all 0.15s ease;
 }
+
+/* Print styles */
+@media print {
+  body { background: white; }
+  nav, aside, .print\:hidden { display: none !important; }
+  .print\:block { display: block !important; }
+  .print\:inline-flex { display: inline-flex !important; }
+  @page { margin: 1.5cm; }
+}
